@@ -1,8 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
-// Imports routes for the users
+// Imports routes
 const user = require('./routes/user.route');
+const comment = require('./routes/comment.route');
 // Initialize express app
 const app = express();
 
@@ -19,6 +20,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use('/users', user);
+app.use('/comments', comment);
 
 const port = 5000;
 
