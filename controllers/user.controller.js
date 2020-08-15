@@ -18,7 +18,7 @@ exports.userCreate = (req, res) => {
 };
 
 // GET
-exports.userDetails = (req, res) => {
+exports.userDetails = (req, res, next) => {
   UserModel.findById(req.params.id, (err, user) => {
     if (err) return next(err);
     res.send(user);
