@@ -1,43 +1,105 @@
-var UserModel = require('../models/user.model');
+const User = require('../models/user.model')
+const service = require('../services')
+
+// ----------------------------- CRUD ------------------------------------------
+
+function getUser (req, res) {
+  let userId = req.params.userId
+
+  User.findById(userId, (err, user) => {
+    if (err) return res.status(500).send({message: `Error when making the request: ${err}`});
+    if (!user) return res.status(404).send({message: `The user does not exist`});
+
+    res.status(200).send({ user });
+  })
+}
+
+function getUsers (req, res) {
+  User.find({}, (err, users) => {
+    if (err) return res.status(500).send({message: `Error when making the request: ${err}`});
+    if (!users) return res.status(404).send({message: 'Users does not exist'});
+
+    res.send(200, { users });
+  })
+}
+
+function saveUser (req, res) {
+  console.log('POST /api/user')
+  console.log(req.body)
+
+  let user = new  User()
+  user.name = req.body.name;
+  user.email = req.body.email;
+  user.password = req.body.password;
+
+  user.save((err, userStored) => {
+    if (err) res.status(500).send({message: `Failed to save to database: ${err}`});
+
+    res.status(200).send({ user: userStored });
+  })
+}
+
+function updateUser (req, res) {
+  let userId = req.params.userId;
+  let update = req.body;
+
+  User.findByIdAndUpdate(userId, update, (err, userUpdated) => {
+    if (err) res.status(500).send({message: `Error updating user: ${err}`});
+
+    res.status(200).send({ user: userUpdated });
+  })
+}
+
+function deleteUser (req, res) {
+  let userId = req.params.userId;
+
+  user.findById(userId, (err, user) => {
+    if (err) res.status(500).send({message: `Failed to delete user: ${err}`});
+
+    user.remove(err => {
+      if (err) res.status(500).send({message: `Error deleting user: ${err}`});
+      res.status(200).send({message: 'User has been deleted'});
+    })
+  })
+}
 
 
-// POST
-exports.userCreate = (req, res) => {
-  var user = new UserModel({
+//-------------------------------------- Authorization ------------------------------------------
+
+function signUp (req, res) {
+  const user = new User({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password
-  });
+  })
 
   user.save((err) => {
-    if (err) {
-      return next(err);
-    }
-    res.send('User Created successfully.')
+    if (err) return res.status(500).send({ message: `Failed to create user: ${err}` });
+
+    return res.status(201).send({ token: service.createToken(user) });
   })
-};
+}
 
-// GET
-exports.userDetails = (req, res, next) => {
-  UserModel.findById(req.params.id, (err, user) => {
-    if (err) return next(err);
-    res.send(user);
+function signIn (req, res) {
+  User.find({ email: req.body.email }, (err, user) => {
+    if (err) return res.status(500).send({ message: err });
+    if (!user) return res.status(404).send({ message: 'User does not exist' });
+
+    req.user = user
+    res.status(200).send({
+      message: 'You have successfully logged in',
+      token: service.createToken(user)
+    })
   })
-};
+}
 
-// PUT
-exports.userUpdate = (req, res) => {
-  UserModel.findByIdAndUpdate(req.params.id, { $set: req.body }, (err, user) => {
-    if (err) return next(err);
-    res.status(200).send({ message: 'User udpated.', data: user, timestamp: new Date() });
-  });
-};
 
-// DELETE
-exports.userDelete = (req, res) => {
-  UserModel.findByIdAndRemove(req.params.id, function (err, user) {
-    if (err) return res.status(500).send("There was a problem deleting the user.");
-    res.status(200).send("User: "+ user.name +" was deleted.");
-  });
-};
-  
+module.exports = {
+  getUser,
+  getUsers,
+  saveUser,
+  updateUser,
+  deleteUser,
+  signUp,
+  signIn
+}
