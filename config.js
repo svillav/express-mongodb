@@ -1,5 +1,5 @@
 module.exports = {
-    port: process.env.PORT || 5000,
-    db: process.env.MONGODB || 'mongodb+srv://SantiagoVilla-505:5697965mdb@cluster0.qr7pl.mongodb.net/vue-express?retryWrites=true&w=majority',
+    port: process.env.PORT || 3000,
+    db: process.env.MONGODB || 'mongodb://localhost:27017/vue-express',
     SECRET_TOKEN: 'tokenkey'
 }
