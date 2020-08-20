@@ -22,7 +22,7 @@ function decodeToken(token) {
       if (payload.exp <= moment().unix()) {
         resolve({
           status: 401,
-          message: 'El token ha expirado'
+          message: 'Token has expired'
         })
       }
 
