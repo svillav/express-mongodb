@@ -20,7 +20,7 @@ function getUsers (req, res) {
         if (err) return res.status(500).send({message: `Error making the request: ${err}`});
         if (!users) return res.status(404).send({ message: 'There is no users'});
 
-        res.send(200).status({ users });  
+        res.status(200).send({ users });  
     })
 }
 
@@ -74,7 +74,7 @@ function signUp (req, res) {
     user.save((err) => {
         if (err) res.status(500).send({ message: `Failed to create user: ${err}`});
 
-        return res.status(200).send({ token: service.createToken(user) });
+        return res.status(200).send({ message: 'User created', token: service.createToken(user) });
     })
 }
 
