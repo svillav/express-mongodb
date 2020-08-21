@@ -2,6 +2,7 @@
 
 const express = require('express');
 const userControllers = require('../controllers/user');
+const commentControllers = require('../controllers/comment');
 const auth = require('../middlewares/auth');
 const api = express.Router();
 
@@ -15,5 +16,12 @@ api.post('/signin', userControllers.signIn);
 api.get('/private', auth, (req, res) => {
     res.status(200).send({ message: 'You have access' });
 })
+
+api.get('/comment', commentControllers.getComments);
+api.get('/comment/:commentId', commentControllers.getComment);
+api.post('/comment', commentControllers.saveComment);
+api.put('/comment/:commentId', commentControllers.updateComment);
+api.delete('/comment/:commentId', commentControllers.deleteComment);
+
 
 module.exports = api;
